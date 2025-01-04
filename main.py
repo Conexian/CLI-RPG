@@ -52,7 +52,7 @@ _dictionary = {
     "long_sword": "Long Sword",
     "great_sword": "Great Sword",
     "_player_health_max": "Max Health",
-    "_player_gold_mutiplier": "Gold Multiplier",
+    "_player_gold_multiplier": "Gold Multiplier",
     "_player_attack_damage_max": "Max Damage Dealt",
     "_player_attack_damage_min": "Min Damage Dealt",
     "_player_critical_hit_multiplier": "Critical Hit Multiplier"
@@ -409,8 +409,8 @@ def award_gold_and_xp(_enemy_gold, _enemy_xp):
         return _enemy_gold, _enemy_xp
 
     else:
-        _mutiplier_increase = _enemy_gold * _player_gold_multiplier
-        _enemy_gold += _mutiplier_increase
+        _multiplier_increase = _enemy_gold * _player_gold_multiplier
+        _enemy_gold += _multiplier_increase
         print(f"You were awarded {_enemy_gold:.0f} G. And {_enemy_xp} XP.")
 
         return _enemy_gold, _enemy_xp
@@ -556,7 +556,7 @@ What would you like to increase?
 [You have {_player_skill_points} points]
 
 1. {_dictionary['_player_health_max']} (+5);
-2. {_dictionary['_player_gold_mutiplier']} (+1.5);
+2. {_dictionary['_player_gold_multiplier']} (+1.5);
 3. {_dictionary['_player_attack_damage_max']} (+2);
 4. {_dictionary['_player_attack_damage_min']} (+1);
 5. {_dictionary['_player_critical_hit_multiplier']} (+1.5);
@@ -564,24 +564,21 @@ E. Exit shop.""")
 
         _player_choice_skill_shop = msvcrt.getch().decode()
 
-        # Map choices to upgrades
         upgrades = {
             "1": (_dictionary['_player_health_max'], 1, lambda: increase_stat("_player_health_max", 5)),
-            "2": (_dictionary['_player_gold_mutiplier'], 1, lambda: increase_stat("_player_gold_mutiplier", 1.5)),
+            "2": (_dictionary['_player_gold_multiplier'], 1, lambda: increase_stat("_player_gold_multiplier", 1.5)),
             "3": (_dictionary['_player_attack_damage_max'], 1, lambda: increase_stat("_player_attack_damage_max", 2)),
             "4": (_dictionary['_player_attack_damage_min'], 1, lambda: increase_stat("_player_attack_damage_min", 1)),
-            "5": (_dictionary['_player_critical_hit_multiplier'], 1,
-                  lambda: increase_stat("_player_critical_hit_multiplier", 0.1)),
-            "6": ("Exit shop", 0, None)
+            "5": (_dictionary['_player_critical_hit_multiplier'], 1, lambda: increase_stat("_player_critical_hit_multiplier", 0.1)),
         }
 
-        if _player_choice_skill_shop in upgrades:
-            upgrade_name, cost, upgrade_func = upgrades[_player_choice_skill_shop]
+        if _player_choice_skill_shop == "e":
+            clear()
+            print("Exiting the shop.")
+            break
 
-            if _player_choice_skill_shop == "e":  # Exit shop
-                clear()
-                print("Exiting the shop.")
-                break
+        elif _player_choice_skill_shop in upgrades:
+            upgrade_name, cost, upgrade_func = upgrades[_player_choice_skill_shop]
 
             if _player_skill_points >= cost:
                 clear()
