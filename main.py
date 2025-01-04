@@ -30,7 +30,7 @@ _player_gold_multiplier = 0.0
 
 _alice_stock_potions = 5
 _unknown_stock_armor = 5
-_aaron_stock_armor = 5
+_aaron_stock_swords = 5
 
 
 def clear(): os.system('cls')
