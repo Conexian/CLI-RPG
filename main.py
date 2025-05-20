@@ -225,34 +225,34 @@ def reset_player_state_to_default():
 
 def ask_for_hardcore_mode():
     global is_hardcore_mode
-    clear_screen();
+    clear_screen()
     print("Welcome, Adventurer!")
     while True:
         print("Do you want to enable Hardcore Mode? (y/n)\n(In Hardcore Mode, your game progress will NOT be saved.)")
         choice1 = msvcrt.getch().decode('utf-8', errors='ignore').lower()
         if choice1 == 'y':
-            clear_screen();
+            clear_screen()
             print(
                 "ARE YOU SURE you want to enable Hardcore Mode?\nThis means NO SAVES. If you die or quit, progress is GONE.\nConfirm (y/n):")
             choice2 = msvcrt.getch().decode('utf-8', errors='ignore').lower()
             if choice2 == 'y':
-                is_hardcore_mode = True;
-                print("Hardcore Mode ENABLED. Good luck.");
-                time.sleep(2);
+                is_hardcore_mode = True
+                print("Hardcore Mode ENABLED. Good luck.")
+                time.sleep(2)
                 break
             else:
-                is_hardcore_mode = False;
-                print("Hardcore Mode DISABLED.");
-                time.sleep(1.5);
+                is_hardcore_mode = False
+                print("Hardcore Mode DISABLED.")
+                time.sleep(1.5)
                 break
         elif choice1 == 'n':
-            is_hardcore_mode = False;
-            print("Hardcore Mode DISABLED. Progress will be saved.");
-            time.sleep(1.5);
+            is_hardcore_mode = False
+            print("Hardcore Mode DISABLED. Progress will be saved.")
+            time.sleep(1.5)
             break
         else:
-            clear_screen();
-            print("Invalid input. Please press 'y' or 'n'.");
+            clear_screen()
+            print("Invalid input. Please press 'y' or 'n'.")
             time.sleep(1)
     clear_screen()
 
@@ -310,8 +310,8 @@ def load_game_state():
         with open(SAVE_FILE_NAME, "rb") as f:
             encrypted_data = f.read()
         apply_game_state(json.loads(cipher_suite.decrypt(encrypted_data).decode('utf-8')))
-        print("Game loaded successfully.");
-        time.sleep(1);
+        print("Game loaded successfully.")
+        time.sleep(1)
         return True
     except Exception:
         try:
@@ -346,7 +346,7 @@ def reset_game_progress():
             reset_player_state_to_default()
             time.sleep(2)
             ask_for_hardcore_mode()
-            print("Starting your new adventure...");
+            print("Starting your new adventure...")
             time.sleep(1)
             start_battle()
             return True
@@ -372,9 +372,9 @@ def calculate_discounted_price(original_price):
 
 def process_purchase(stall_owner_key, item_choice_id):
     global player_gold, player_potions_inventory, player_min_attack, player_max_attack, player_defense
-    clear_screen();
-    stall_data = SHOP_ITEMS_DATA[stall_owner_key];
-    item_to_purchase = None;
+    clear_screen()
+    stall_data = SHOP_ITEMS_DATA[stall_owner_key]
+    item_to_purchase = None
     item_key_purchased = None
     for key, details in stall_data['items'].items():
         if details['id'] == item_choice_id: item_to_purchase = details; item_key_purchased = key; break
@@ -383,23 +383,23 @@ def process_purchase(stall_owner_key, item_choice_id):
     actual_price = calculate_discounted_price(item_to_purchase['price'])
     if actual_price > player_gold: print("You don't have enough gold!"); return False
 
-    player_gold -= actual_price;
+    player_gold -= actual_price
     item_display_name = ITEM_DISPLAY_NAMES[item_to_purchase['name_key']]
     if stall_data['category'] == 'potions':
         player_potions_inventory[item_key_purchased] += 1
     elif stall_data['category'] == 'swords':
-        player_min_attack += item_to_purchase['damage_increase'][0];
+        player_min_attack += item_to_purchase['damage_increase'][0]
         player_max_attack += \
             item_to_purchase['damage_increase'][1]
     elif stall_data['category'] == 'armor':
         player_defense += item_to_purchase['defense_increase']
-    print(f"You purchased {item_display_name} for {actual_price}G!");
+    print(f"You purchased {item_display_name} for {actual_price}G!")
     return True
 
 
 def visit_stall(stall_owner_key):
     global stall_first_visit, stall_item_stocks
-    clear_screen();
+    clear_screen()
     stall_config = SHOP_ITEMS_DATA[stall_owner_key]
     if stall_first_visit[stall_owner_key]:
         for line in stall_config['first_visit_dialog']: print(line); time.sleep(
@@ -418,9 +418,9 @@ def visit_stall(stall_owner_key):
         player_choice = msvcrt.getch().decode('utf-8', errors='ignore').lower()
         if player_choice == "e": print(get_random_dialog(stall_owner_key, 'bye')); break
         if process_purchase(stall_owner_key, player_choice):
-            print(get_random_dialog(stall_owner_key, 'thanks'));
+            print(get_random_dialog(stall_owner_key, 'thanks'))
             stall_item_stocks[stall_owner_key] -= 1
-        time.sleep(1.5);
+        time.sleep(1.5)
         clear_screen()
         if stall_item_stocks[stall_owner_key] <= 0: break
     if stall_item_stocks[stall_owner_key] <= 0: print(stall_config['out_of_stock_dialog'])
@@ -440,8 +440,7 @@ def open_market():
         elif market_choice == "3":
             visit_stall('aaron')
         elif market_choice == "e":
-            clear_screen();
-            break
+            clear_screen(); break
         else:
             print("Invalid choice!")
         clear_screen()
@@ -452,14 +451,14 @@ def handle_battle_outcome(current_player_health, current_enemy_health, enemy_dat
     global stall_item_stocks, total_fights_won, player_gold, player_xp, can_use_menu_heal
     if current_player_health <= 0: clear_screen(); print("You have been defeated!"); time.sleep(2); exit()
     if current_enemy_health <= 0:
-        clear_screen();
+        clear_screen()
         print(f"You have defeated the {enemy_data['name']}!")
         awarded_gold, awarded_xp = calculate_rewards(enemy_data['gold'], enemy_data['xp'], enemy_data['name'])
-        player_gold += awarded_gold;
+        player_gold += awarded_gold
         player_xp += awarded_xp
-        print(f"You received {awarded_gold:,} G and {awarded_xp:,} XP.");
+        print(f"You received {awarded_gold:,} G and {awarded_xp:,} XP.")
         time.sleep(1)
-        check_for_level_up();
+        check_for_level_up()
         total_fights_won += 1
         if is_strength_potion_active: player_max_attack -= POTION_STRENGTH_BOOST; is_strength_potion_active = False
         if is_defense_potion_active: player_defense -= POTION_DEFENSE_BOOST; is_defense_potion_active = False
@@ -467,8 +466,8 @@ def handle_battle_outcome(current_player_health, current_enemy_health, enemy_dat
         menu_heal_level = player_perks.get("menu_heal", 0)
         if menu_heal_level > 0 and menu_heal_level <= len(PERK_SHOP_CONFIG["menu_heal"]["levels"]):
             can_use_menu_heal = True
-        save_game_state();
-        time.sleep(2);
+        save_game_state()
+        time.sleep(2)
         return True
     return False
 
@@ -481,34 +480,34 @@ def use_potion_in_battle(potion_choice_key):
         f"You have no {ITEM_DISPLAY_NAMES[potion_type]}s!"); return
     clear_screen()
     if potion_type == 'healing':
-        player_potions_inventory['healing'] -= 1;
+        player_potions_inventory['healing'] -= 1
         player_health = min(player_health + POTION_HEAL_AMOUNT,
-                            player_max_health);
+                            player_max_health)
         print(
             f"Healing Potion used! Healed {POTION_HEAL_AMOUNT} HP.")
     elif potion_type == 'defense':
         if is_defense_potion_active: print("Defense Potion already active!"); return
-        player_potions_inventory['defense'] -= 1;
-        player_defense += POTION_DEFENSE_BOOST;
-        is_defense_potion_active = True;
+        player_potions_inventory['defense'] -= 1
+        player_defense += POTION_DEFENSE_BOOST
+        is_defense_potion_active = True
         print(f"Defense Potion used! Defense +{POTION_DEFENSE_BOOST}.")
     elif potion_type == 'strength':
         if is_strength_potion_active: print("Strength Potion already active!"); return
-        player_potions_inventory['strength'] -= 1;
-        player_max_attack += POTION_STRENGTH_BOOST;
-        is_strength_potion_active = True;
+        player_potions_inventory['strength'] -= 1
+        player_max_attack += POTION_STRENGTH_BOOST
+        is_strength_potion_active = True
         print(f"Strength Potion used! Max Attack +{POTION_STRENGTH_BOOST}.")
-    potions_used_this_turn += 1;
+    potions_used_this_turn += 1
     time.sleep(1.5)
 
 
 def check_for_level_up():
-    global player_xp_to_level_up, player_level, player_xp, player_skill_points;
+    global player_xp_to_level_up, player_level, player_xp, player_skill_points
     leveled_up = False
     while player_xp >= player_xp_to_level_up:
-        player_xp -= player_xp_to_level_up;
-        original_level = player_level;
-        player_level += 1;
+        player_xp -= player_xp_to_level_up
+        original_level = player_level
+        player_level += 1
         player_skill_points += 1
 
         if player_level <= 20:
@@ -519,7 +518,7 @@ def check_for_level_up():
             player_xp_to_level_up += round(player_xp_to_level_up * 0.08) + 1000
 
         print(
-            f"LEVEL UP! Lvl {original_level} -> {player_level}. +1 Skill Point. Next Lvl: {player_xp_to_level_up:,} XP.");
+            f"LEVEL UP! Lvl {original_level} -> {player_level}. +1 Skill Point. Next Lvl: {player_xp_to_level_up:,} XP.")
         leveled_up = True
     if leveled_up: time.sleep(1)
 
@@ -538,10 +537,10 @@ def calculate_rewards(base_gold, base_xp, enemy_name):
         print("*" * 40)
         time.sleep(1)
 
-        jackpot_gold = random.randint(800000, 1200000)  # Adjusted for "around a million"
+        jackpot_gold = random.randint(800000, 1200000)
         jackpot_xp_bonus = 0
         if enemy_name == "Chaos Titan":
-            jackpot_xp_bonus = random.randint(700000, 1000000)  # Can be XP or Gold heavy
+            jackpot_xp_bonus = random.randint(700000, 1000000)
         elif enemy_name == "Celestial Guardian":
             jackpot_xp_bonus = random.randint(600000, 900000)
 
@@ -572,58 +571,52 @@ def perform_attack_round(current_enemy_hp, enemy_stats):
     dmg = random.randint(player_min_attack, player_max_attack)
     if random.randint(1, 4) == 4: dmg += round(player_max_attack * player_crit_bonus_multiplier); print("Critical Hit!")
     enemy_dmg = max(0, random.randint(1, enemy_stats['attack']) - player_defense)
-    current_enemy_hp -= dmg;
+    current_enemy_hp -= dmg
     player_health -= enemy_dmg
-    print(f"You dealt {dmg:.0f} DMG. Enemy dealt {enemy_dmg:.0f} DMG.");
+    print(f"You dealt {dmg:.0f} DMG. Enemy dealt {enemy_dmg:.0f} DMG.")
     potions_used_this_turn = 0
     return current_enemy_hp
 
 
 def start_battle():
     global player_health, potions_used_this_turn
-    clear_screen();
-    enemy = select_random_enemy();
+    clear_screen()
+    enemy = select_random_enemy()
     enemy_hp = enemy['hp']
-    print(f"Encounter: {enemy['name']} (HP: {enemy_hp:.0f}).");
+    print(f"Encounter: {enemy['name']} (HP: {enemy_hp:.0f}).")
     time.sleep(1)
     battle_over = False
     while player_health > 0 and enemy_hp > 0:
-        clear_screen();
+        clear_screen()
         print(f"{enemy['name']} HP: {enemy_hp:.0f} | Your HP: {player_health:.0f}\nAction: 1. Attack, 2. Potion")
         action = msvcrt.getch().decode('utf-8', errors='ignore')
         if action == "1":
-            clear_screen();
-            enemy_hp = perform_attack_round(enemy_hp, enemy)
+            clear_screen(); enemy_hp = perform_attack_round(enemy_hp, enemy)
         elif action == "2":
-            if potions_used_this_turn >= 3: clear_screen(); print("Too many potions this turn!"); time.sleep(
-                1.5); continue
-            if not any(player_potions_inventory.values()): clear_screen(); print("No potions!"); time.sleep(
-                1.5); continue
-            clear_screen();
+            if potions_used_this_turn >= 3: clear_screen(); print("Too many potions this turn!"); time.sleep(1.5); continue
+            if not any(player_potions_inventory.values()): clear_screen(); print("No potions!"); time.sleep(1.5); continue
+            clear_screen()
             print("Use Potion:")
             opts, valid_choices, num = [], {}, 1
             for k, v in POTION_USE_CHOICES.items():
                 if player_potions_inventory.get(v, 0) > 0:
-                    opts.append(f"{num}. {ITEM_DISPLAY_NAMES[v]} ({player_potions_inventory[v]})");
-                    valid_choices[str(num)] = k;
+                    opts.append(f"{num}. {ITEM_DISPLAY_NAMES[v]} ({player_potions_inventory[v]})")
+                    valid_choices[str(num)] = k
                     num += 1
             if not valid_choices: print("No potions!"); time.sleep(1.5); continue
             for o in opts: print(o)
-            print("E. Cancel");
+            print("E. Cancel")
             p_choice = msvcrt.getch().decode('utf-8', errors='ignore').lower()
             if p_choice == 'e': continue
             if p_choice in valid_choices:
                 use_potion_in_battle(valid_choices[p_choice])
             else:
-                clear_screen();
-                print("Invalid selection.");
-                time.sleep(1.5)
+                clear_screen(); print("Invalid selection."); time.sleep(1.5)
         else:
-            clear_screen();
-            print("Invalid action!");
+            clear_screen()
+            print("Invalid action!")
             time.sleep(1)
-        if player_health <= 0 or enemy_hp <= 0: battle_over = handle_battle_outcome(player_health, enemy_hp,
-                                                                                    enemy); break
+        if player_health <= 0 or enemy_hp <= 0: battle_over = handle_battle_outcome(player_health, enemy_hp, enemy); break
         time.sleep(1.5)
     if battle_over: main_game_menu()
 
@@ -634,21 +627,21 @@ def open_skill_shop():
     while True:
         print(f"Skill Shop (Points: {player_skill_points}). Upgrade what?\n")
         for k, conf in SKILL_UPGRADE_CONFIG.items():
-            name = ITEM_DISPLAY_NAMES[conf['display_key']];
-            val = globals()[conf['var_name']];
+            name = ITEM_DISPLAY_NAMES[conf['display_key']]
+            val = globals()[conf['var_name']]
             inc = conf['increment']
             is_mult = "multiplier" in conf['display_key']
             val_str = f"{val * 100:.1f}%" if is_mult else f"{val:.0f}"
             inc_str = f"+{inc * 100:.1f}%" if is_mult else f"+{inc:.0f}"
             print(f"{k}. {name} (Now: {val_str}, {inc_str}) - Cost: {conf['cost']} SP")
-        print("E. Exit");
-        choice = msvcrt.getch().decode('utf-8', errors='ignore').lower();
+        print("E. Exit")
+        choice = msvcrt.getch().decode('utf-8', errors='ignore').lower()
         clear_screen()
         if choice == 'e': print("Exiting skill shop."); break
         upg = SKILL_UPGRADE_CONFIG.get(choice)
         if upg:
             if player_skill_points >= upg['cost']:
-                globals()[upg['var_name']] += upg['increment'];
+                globals()[upg['var_name']] += upg['increment']
                 player_skill_points -= upg['cost']
                 new_val_str = f"{globals()[upg['var_name']] * 100:.1f}%" if "multiplier" in upg[
                     'display_key'] else f"{globals()[upg['var_name']]:.0f}"
@@ -658,7 +651,7 @@ def open_skill_shop():
                 print("Not enough skill points.")
         else:
             print("Invalid choice.")
-        time.sleep(2);
+        time.sleep(2)
         clear_screen()
 
 
@@ -692,7 +685,7 @@ def open_perk_shop():
             print("-" * 20)
         print("E. Exit Shop")
 
-        choice = msvcrt.getch().decode('utf-8', errors='ignore').lower();
+        choice = msvcrt.getch().decode('utf-8', errors='ignore').lower()
         clear_screen()
         if choice == 'e': print("Exiting Perk Shop."); break
 
@@ -713,7 +706,7 @@ def open_perk_shop():
                 print(f"{config['name']} is already at max level.")
         else:
             print("Invalid choice.")
-        time.sleep(2);
+        time.sleep(2)
         clear_screen()
 
 
@@ -747,13 +740,13 @@ def main_game_menu():
             start_battle()
             break
         elif choice == "2":
-            open_market();
+            open_market()
             clear_screen()
         elif choice == "3":
-            open_skill_shop();
+            open_skill_shop()
             clear_screen()
         elif choice == "4":
-            open_perk_shop();
+            open_perk_shop()
             clear_screen()
         elif choice == heal_option_key and menu_heal_level > 0 and can_use_menu_heal:
             if menu_heal_level <= len(PERK_SHOP_CONFIG["menu_heal"]["levels"]):
@@ -761,20 +754,20 @@ def main_game_menu():
                 actual_heal = min(heal_amount, player_max_health - player_health)
                 player_health += actual_heal
                 can_use_menu_heal = False
-                clear_screen();
-                print(f"Used Quick Mend, healed {actual_heal:.0f} HP.");
-                time.sleep(1.5);
+                clear_screen()
+                print(f"Used Quick Mend, healed {actual_heal:.0f} HP.")
+                time.sleep(1.5)
                 clear_screen()
         elif choice == reset_option_key:
             if reset_game_progress():
                 return
         elif choice == "q":
-            print("Exiting game. Goodbye!");
+            print("Exiting game. Goodbye!")
             exit()
         else:
-            clear_screen();
-            print("Invalid choice.");
-            time.sleep(1);
+            clear_screen()
+            print("Invalid choice.")
+            time.sleep(1)
             clear_screen()
 
 
@@ -782,10 +775,10 @@ if __name__ == "__main__":
     if not load_game_state():
         reset_player_state_to_default()
         ask_for_hardcore_mode()
-        print("Starting your adventure...");
+        print("Starting your adventure...")
         time.sleep(1)
         start_battle()
     else:
-        print("Continuing your adventure...");
+        print("Continuing your adventure...")
         time.sleep(1)
         main_game_menu()
